@@ -136,7 +136,7 @@ http://www.biostat.jhsph.edu/~bcaffo/downloads.htm
 You can install \texttt{exactLoglinTest} with \texttt{R CMD INSTALL}, on Unix and
 Linux, while the binaries are available for Windows. Assuming it is
 installed, one can load \mcexact with
-<<>>=
+<<>>= 
 library(exactLoglinTest)
 set.seed(1)
 @ 
@@ -302,16 +302,15 @@ title("Pearson P-value by iteration")
 @ 
 \end{center}
 
-Though the P-values have apparently stabilized and are clearly larger
-than most normal type I error rates, there is an extremely slow decay
-in the autocorrelations of the chain of goodness of fit
-statistics. Therefore, we should execute a longer run using large
-batch sizes. While on the subject of batch sizes, note that \mcexact
-does not require the total number of simulations to be a multiple of
-the batch size. If the algorithm terminates in the middle of
-completing a batch, it is not used in the P-value
+The P-values have apparently not stabilized. Also, there is an
+extremely slow decay in the autocorrelations of the chain of goodness
+of fit statistics. Therefore, we should execute a longer run using
+large batch sizes. While on the subject of batch sizes, note that
+\mcexact does not require the total number of simulations to be a
+multiple of the batch size. If the algorithm terminates in the middle
+of completing a batch, it is not used in the P-value
 calculations. However, the simulations are not wasted if the algorithm
-is resumed with \texttt{update}.  
+is resumed with \texttt{update}.
 
 One large final run of this data discarding all of the initial
 tinkering could be performed by setting \texttt{flush = TRUE} as an

@@ -9,7 +9,7 @@ build.mcx.obj <- function(formula,
                           maxiter = nosim,
                           p = NULL,
                           batchsize = NULL){
-                                        #the observed test statistic value
+  ##the observed test statistic value
   glm.fit <- glm(formula,
                  family = poisson,
                  x = TRUE,
@@ -20,15 +20,16 @@ build.mcx.obj <- function(formula,
   y <- glm.fit$y
   x <- glm.fit$x
   r <- glm.fit$qr$rank
-                                        #gets rid of redundant rows
+  
+  ##gets rid of redundant rows
   if (r < nrow(x))
     x <- x[, glm.fit$qr$pivot[1 : r]]
 
   errorcheck(y, x, stat, dens, nosim, method, savechain, tdf, maxiter, p, batchsize)
   
-  n <- length(y)  
-                                        #the following reorder x
-                                        #temp <- reorder(x)
+  n <- length(y)
+  
+  ##the following reorder x
   temp <- qr(t(x))
   n1 <- n - temp$rank
   ord <- rev(temp$pivot)
@@ -37,17 +38,19 @@ build.mcx.obj <- function(formula,
   mu.hat <- mu.hat[ord]
   s <- t(x) %*% y
   x1 <- x[1 : n1,]
-                                        #we only need the inverse of x2
+  ##we only need the inverse of x2
   x2invt <- t(solve(x[(n1 + 1) : n,]))
   dobs <- stat(y = y, mu = mu.hat, rowlabels = FALSE)
-                                        #get the conditional means and variances required
-                                        #by bab and cab
+  
+  ##get the conditional means and variances required
+  ##by bab and cab
   mu.hat1 <- mu.hat[1 : n1]
   ctmp <- rbind(cbind(diag(rep(1, n1)), matrix(0, nrow = n1, ncol = n - n1)), t(x))
   v <- ctmp %*% diag(mu.hat) %*% t(ctmp)
   temp <-   v[1 : n1, (n1 + 1) : n]
   condv1 <- v[1 : n1, 1 : n1] - temp %*% solve(v[(n1 + 1) : n, (n1 + 1) : n]) %*% t(temp)
-                                        #creates the object required as the input to update
+  
+  ##creates the object required as the input to update
   args <- list(conde1 = mu.hat1,
                condv1 = condv1,
                dens = dens,
@@ -74,7 +77,7 @@ build.mcx.obj <- function(formula,
     args$batchsize <- batchsize
     class(args) <- c("cab")
   }
-  args
+  return(args)
 }
 
 

@@ -22,8 +22,8 @@ simulate.conditional <- function(formula,
     simtable.bab(args)
   else if (method == "cab"){
     if (is.null(y.start))
-      simtable.cab(args)
+      return(simtable.cab(args))
     else
-      simulate.cab(args, y.start = y.start)
+      return(simulate.cab(args, y.start = y.start))
   }
 }

@@ -1,5 +1,5 @@
 simtable.cab <- function(args, nosim = NULL, p = NULL, y.start = NULL){
-                                        #error checking and initializing
+  ##error checking and initializing
   if (!is.null(p)){
     if (!is.real(p)) stop("p must be real valued")
     else if ((p < 0) | (p > 1)) stop("p must be in [0,1]")
@@ -18,26 +18,27 @@ simtable.cab <- function(args, nosim = NULL, p = NULL, y.start = NULL){
     shuffle <- sample(1 : args$n1)
     conde1.permute <-  args$conde1[shuffle]
     condv1.permute <-  args$condv1[shuffle, shuffle]
-                                        #k is the number of elements to be left fixed
+    ##k is the number of elements to be left fixed
     k <- rbinom(1, args$n1 - 1, args$p)
-                                        #separate y1 into those that stay the same and
-                                        #those that get updated
+    ##separate y1 into those that stay the same and
+    ##those that get updated
     y1.old.permute <- y1.old[shuffle]
     if (k > 0)
       staysfixed <- y1.old.permute[1 : k]
     else
        staysfixed <- NULL
     getsupdated <- y1.old.permute[(k + 1) : args$n1]
-                                        #multinorm calculates the required mean for
-                                        #going backwards
+    ##multinorm calculates the required mean for
+    ##going backwards
     temp <- .Call("multinorm",
                   conde1.permute,
                   condv1.permute,
                   as.real(staysfixed),
                   as.real(y1.old.permute),
                   args$tdf,
-                  as.integer(k))
-                                        #the ones that got updated
+                  as.integer(k),
+                  PACKAGE="exactLoglinTest")
+    ##the ones that got updated
     y1.new.permute <- temp[[1]]
     conde1.old.permute <- temp[[2]]
     changed <- y1.new.permute[(k + 1) : args$n1]
@@ -67,12 +68,12 @@ simtable.cab <- function(args, nosim = NULL, p = NULL, y.start = NULL){
     }
     else {
       y.new <- y.old
-      #not necessary but just to remind you
-      #y.old remains y.old for the next iteration
-      #y1.old remains y1.old for the next iteration
+      ##not necessary but just to remind you
+      ##y.old remains y.old for the next iteration
+      ##y1.old remains y1.old for the next iteration
     }
     chain[i,] <- y.new
   }
-  chain[,order(args$ord)]
+  return(chain[,order(args$ord)])
 }
 

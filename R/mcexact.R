@@ -8,8 +8,7 @@ mcexact <- function(formula,
                     tdf = 3,
                     maxiter = nosim,
                     p = NULL,
-                    batchsize = NULL){
-  
+                    batchsize = NULL){  
   args <- build.mcx.obj(formula,
                         data,
                         stat,

@@ -1,11 +1,11 @@
-                                        #this is the workhorse program for the booth and butler method
-                                        #it requires the input to be of the form constructed by mcexact
+###this is the workhorse program for the booth and butler method
+###it requires the input to be of the form constructed by mcexact
 update.cab <- function(object,...){
   cab(object, ...) 
 }
 
 cab <- function(args, nosim = NULL, batchsize = NULL, savechain = FALSE, p = NULL, flush = FALSE){
-                                        #error checking and initializing
+  ##error checking and initializing
   if (!is.null(p)){
     if (!is.real(p)) stop("p must be real valued")
     else if ((p < 0) | (p > 1)) stop("p must be in [0,1]")
@@ -37,26 +37,27 @@ cab <- function(args, nosim = NULL, batchsize = NULL, savechain = FALSE, p = NUL
     shuffle <- sample(1 : args$n1)
     conde1.permute <-  args$conde1[shuffle]
     condv1.permute <-  args$condv1[shuffle, shuffle]
-                                        #k is the number of elements to be left fixed
+    ##k is the number of elements to be left fixed
     k <- rbinom(1, args$n1 - 1, args$p)
-                                        #separate y1 into those that stay the same and
-                                        #those that get updated
+    ##separate y1 into those that stay the same and
+    ##those that get updated
     y1.old.permute <- y1.old[shuffle]
     if (k > 0)
       staysfixed <- y1.old.permute[1 : k]
     else
        staysfixed <- NULL
     getsupdated <- y1.old.permute[(k + 1) : args$n1]
-                                        #multinorm calculates the required mean for
-                                        #going backwards
+    ##multinorm calculates the required mean for
+    ##going backwards
     temp <- .Call("multinorm",
                   conde1.permute,
                   condv1.permute,
                   as.real(staysfixed),
                   as.real(y1.old.permute),
                   args$tdf,
-                  as.integer(k))
-                                        #the ones that got updated
+                  as.integer(k),
+                  PACKAGE="exactLoglinTest")
+    ##the ones that got updated
     y1.new.permute <- temp[[1]]
     conde1.old.permute <- temp[[2]]
     changed <- y1.new.permute[(k + 1) : args$n1]
@@ -87,15 +88,15 @@ cab <- function(args, nosim = NULL, batchsize = NULL, savechain = FALSE, p = NUL
     }
     else {
       y.new <- y.old
-      #not necessary but just to remind you
-      #y.old remains y.old for the next iteration
-      #y1.old remains y1.old for the next iteration
+      ##not necessary but just to remind you
+      ##y.old remains y.old for the next iteration
+      ##y1.old remains y1.old for the next iteration
     }
     d <- args$stat(y = y.new, mu = args$mu.hat, rowlabels = FALSE)
     if (savechain) args$chain[i - args$startiter + 1,] <- d
     
     phat <- (phat * (i - 1) + (d >= args$dobs)) / i
-                                        #upddate the batchmean estimate
+    ##upddate the batchmean estimate
     batch.iter <- i %% args$batchsize + 1
     if (batch.iter == 1) current.batchmean <- 0
     current.batchmean <- (current.batchmean * (batch.iter - 1) + (d >= args$dobs)) / batch.iter
@@ -105,7 +106,7 @@ cab <- function(args, nosim = NULL, batchsize = NULL, savechain = FALSE, p = NUL
     }
   }
   args$startiter <- i + 1
-                                        #keep the current batchmean in case simulation is restarted
+  ##keep the current batchmean in case simulation is restarted
   args$current.batchmean <- current.batchmean
   args$bmsq <- bmsq
   args$nobatches <- nobatches
@@ -113,6 +114,6 @@ cab <- function(args, nosim = NULL, batchsize = NULL, savechain = FALSE, p = NUL
   args$mcse <- sqrt((bmsq /  nobatches - phat ^ 2) / nobatches)
   args$y1.start <- y1.new
   args$perpos <- perpos / args$nosim
-  args
+  return(args)
 }
 
