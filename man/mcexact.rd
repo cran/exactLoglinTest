@@ -33,7 +33,7 @@ build.mcx.obj(formula,
 }
 \arguments{
   \item{formula}{Null model formula specified as in \code{glm}}
-  \item{data}{Optional data frame}
+  \item{data}{Data frame}
   \item{stat}{The test statistic, a function of the form \code{function(y, mu.hat)}
     where \code{y} is the observed and \code{mu.hat} are the fitted
     values. Current default \code{gof} is a bivariate function of the
@@ -98,7 +98,3 @@ mcx <- mcexact(y ~ factor(A) + factor(B) + I(A * B),
 summary(mcx)
 }
 \keyword{htest}
-
-
-
-
