@@ -1,0 +1,334 @@
+\documentclass[a4paper]{article}
+%%\VignetteIndexEntry{exactLoglinTest: a program for Monte Carlo goodness of fit tests for log-linear models}
+\usepackage{natbib,amsmath,geometry}
+\geometry{margin=1in}
+
+\title{\texttt{exactLoglinTest}: A Program for Monte Carlo 
+Conditional Analysis of Log-linear Models}
+\author{Brian S. Caffo}
+
+%\newcommand{\eqref}[1]{(\ref{#1})}
+\newcommand{\mcexact}{\texttt{mcexact} }
+
+\begin{document} 
+\maketitle 
+
+Nuisance parameters are parameters that are not of direct interest to
+the inferential question in hand. In a frequentist or likelihood
+paradigm, a common tool for eliminating nuisance parameters is to
+condition on their sufficient statistics. The same technique is useful
+(though rarely used) in a Bayesian settings, as it eliminates the need
+to put priors on nuisance parameters.
+
+For log-linear models, conditional analysis suffers from two main drawbacks.
+\begin{enumerate}
+\item The set of lattice points contained in the conditional distribution is difficult to manage, 
+      computationally or analytically.
+\item The sufficient statistics for the nuisance parameters are not ancillary to the 
+      parameters of interest.
+\end{enumerate}
+In this manuscript we address only the first drawback using \texttt{exactLoglinTest}.
+
+\section{The Problem} 
+
+The observed data, $y = (y_1, \ldots, y_n)$, are modeled as Poisson
+counts with a means, $\mu = (\mu_1,\ldots,\mu_n)$, satisfying $$ \log
+\mu = x \beta $$ under the null hypothesis. Here $x$ is a full rank
+$n\times p$ design matrix. It is easily shown that the sufficient
+statistics for $\beta$ under the null hypothesis are $x^t y$, where a
+superscript $t$ denotes a transpose. Let $h$ be a test statistic of
+interest where larger values of $h$ support the alternative
+hypothesis. Two examples are the Pearson Chi-Squared statistic and the
+deviance. An exact test relative to $h$ can be performed via the
+conditional P-value
+$$
+\mbox{Prob}\{h(y) \geq h(y_{obs}) | x^t y = x^t y_{obs}\} = \sum_{\{y
+\in \Gamma\}} \frac{I\{h(y) \geq h(y_{obs})\}}{C \prod y_i!}  
+$$ 
+where $y_{obs}$ is the observed table, $C$ is a normalizing
+constant and $\Gamma = \{y | x^t y = x^t y_{obs}\}$  (often referred
+to as the reference set).
+
+The term ``exact'' is used to refer to tests that guarantee the
+nominal type I error rate unconditionally. Thus a test that never
+rejects the null hypothesis is technically exact in any
+situation. Therefore, exactness is not in itself a sufficient
+condition for a test to be acceptable.  Moreover, this example (never
+rejecting) is particularly relevant in our setting because $\Gamma$
+may contain one or few elements. Hence the conditional P-value will be
+exactly or near one regardless of the evidence in the data vis-a-vis
+the two hypotheses.  However, it is also the case that the
+conservative conditional tests can produce P-values that are smaller
+than those calculated via Chi-squared approximations (see Subsection
+\ref{path} for an example).
+
+\section{\texttt{exactLoglinTest}} 
+The software \texttt{exactLoglinTest} is an implementation of the algorithms presented
+in \cite{booth:butler:1999} and \cite{caffo:booth:2000}.  At the heart
+of both algorithms is a sequentially generated rounded normal
+approximation to the conditional distribution. We refer the reader
+to those papers for a more complete description.
+
+You can obtain a copy of \texttt{exactLoglinTest} at as well as a more detailed
+no-web \cite{leisch} version of this document at
+\begin{verbatim}
+http://www.biostat.jhsph.edu/~bcaffo/downloads.htm
+\end{verbatim}
+You can install \texttt{exactLoglinTest} with \texttt{R CMD INSTALL}, on Unix and
+Linux, while the binaries are available for Windows. Assuming it is
+installed, one can load the program with.
+<<>>=
+library(exactLoglinTest)
+set.seed(1)
+@ 
+Here, the optional argument \texttt{lib.loc} is necessary if
+the package has been installed into one of the paths that R automatically
+checks. We also set the random number seed to a specific value which is
+a good practice for Monte Carlo procedures.
+
+\section{Examples}
+\subsection{Residency Data}
+Assuming \texttt{exactLoglinTest} has been properly installed, the residency data can
+be obtained by the command
+<<>>=
+data(residence.dat)
+@ 
+This data is a 4$\times$4 table of persons' residence in 1985 by
+their residence in 1980. See Table \ref{tab:res} for the complete
+data.  The data frame, \texttt{residence.dat}, contains the counts
+stacked by the rows. The extra term \texttt{sym.pair} is used to fit
+a quasi-symmetry model.  For details on the quasi-symmetry model see
+\cite{agre:1990}.  To obtain a Monte Carlo goodness of fit test of
+quasi-symmetry versus a saturated model involves the following command
+<<>>=
+resid.mcx <- mcexact(y ~ res.1985 + res.1980 + factor(sym.pair),
+                     data = residence.dat,
+                     nosim = 10 ^ 2,
+                     maxiter = 10 ^ 4)
+resid.mcx
+@ 
+
+The default method is the importance sampling of
+\cite{booth:butler:1999}. Using this method, the number of desired
+simulations \texttt{nosim} may not be met in \texttt{maxiter}
+iterations and no warning is issued if this occurs. The returned value
+is a list storing the results of the Monte Carlo simulation and all of
+the relevant information necessary to restart the simulation.  More
+information can be obtained with \texttt{summary}
+<<>>=
+summary(resid.mcx)
+@ 
+The $t$ degrees of freedom refers to degrees of freedom used as a
+tuning parameter within the algorithm while the \texttt{df} refers to
+the model degrees of freedom. In this case, the Monte Carlo standard
+error, \texttt{mcse}, seems too large. As mentioned previously,
+\mcexact, stores the relevant information for restarting the
+simulation
+<<>>=
+resid.mcx <- update(resid.mcx, nosim = 10 ^ 4, maxiter = 10 ^ 6)
+resid.mcx
+@ 
+It is important to note that \texttt{update} only resumes the
+simulation with changes to some simulation-specific parameters. It
+will not allow users to change the model formulation; one must rerun
+\mcexact independently to do that.
+
+This example illustrates the point that the underlying algorithms are
+very efficient when the cell counts are large. Of course, when this is
+the case, the large sample approximations are nearly identical to the
+conditional results
+<<>>=
+pchisq(c(2.986, 2.982), 3, lower.tail = FALSE)
+@ 
+
+\subsection{Pathologists' Tumor Ratings}
+\label{path}
+The following example is interesting in that the large sample results
+differ drastically from the conditional results. Moreover, the
+conditional results are less conservative. The data, given in Table
+\ref{tab:path} can be obtained via
+<<>>=
+data(pathologist.dat)
+@ 
+A uniform association model accounts for the ordinal nature of the
+ratings by associating ordinal scores with the pathologist's ratings
+\citep[see][]{agre:1990}. Specifically, we can test a uniform association
+model against the saturated model with
+<<>>=
+path.mcx <- mcexact(y ~ factor(A) + factor(B) + I(A * B),
+                    data = pathologist.dat,
+                    nosim = 10 ^ 5,
+                    maxiter = 10 ^ 6)
+summary(path.mcx)
+@ 
+The previous code chunk takes about 1 minute on my laptop. It is
+worth comparing these results to the asymptotic Chi-squared results
+<<>>=
+pchisq(c(16.214, 14.729), 15, lower.tail = FALSE)
+@ 
+
+\subsection{Alligator Food Choice Data Using MCMC}
+In this example we illustrate the algorithm
+from\cite{caffo:booth:2000} using the data and Poisson log-linear
+model from Table \ref{tab:alli}.  The alligator data is a good choice
+for MCMC as the percent of valid tables generated using \texttt{method
+= "bab"} is very small, less than 1\% of the tables simulated. It is
+often the case that the MCMC algorithm will be preferable when the
+table is large and/or sparse.  Of course, using MCMC introduces
+further complications in reliably running and using the output of the
+algorithm.
+
+The algorithm from \cite{caffo:booth:2000} uses local moves to reduce
+the number of tables with negative entries that the chain produces.
+You can specify this method by using \texttt{method = "cab"}. The
+parameter \texttt{p} represents the average proportion of table
+entries left fixed. So a chain with \texttt{p=.9} will leave most of
+the table entries fixed from one iteration to the next. A high value
+of \texttt{p} will result in a high proportion of valid (non-negative)
+simulated tables. Too large of a value of \texttt{p} causes the chain
+to mix slowly because the tables will be very similar from one
+iteration to the next. However, it is sometimes the case that a small
+value of \texttt{p} will produce too many tables with negative
+entries. Hence the Metropolis/Hastings/Green algorithm will stay at
+the current table for long periods and again result in a slowly mixing
+chain.  It is also worth mentioning that for large values of
+\texttt{p} the algorithm is theoretically irreducible, but may not be
+practically irreducible. Therefore, it is advisable to both tinker
+with the chain some and make final runs using multiple values of
+\texttt{p}.
+
+The program allows for the option to save the chain goodness of fit
+statistics, so that some initial tinkering can be performed.  This is
+specified with the \texttt{savechain = TRUE} option. If using
+impartance sampling, \texttt{method = "bab"}, then \texttt{savechain}
+saves both the statistic values and the importance weights on the log
+scale.
+<<>>=
+data(alligator.dat)
+alligator.mcx <- mcexact(y ~ (lake + gender + size) * food + lake * gender * size,
+                         data = alligator.dat,
+                         nosim = 10 ^ 4,
+                         method = "cab", 
+                         savechain = TRUE,
+                         batchsize = 100,
+                         p = .4)
+summary(alligator.mcx)
+@ 
+
+The chain of goodness of fit statistics are saved in
+\texttt{alligator.mcx}\$\texttt{chain}. The saved chain is discarded
+if the simulations are resumed with \texttt{update}, even if
+\texttt{savechain = T} when the simulation is resumed.
+
+We would want to look at the autocorrelation function of the goodness
+of fit statistics.
+\begin{center}
+<<fig = TRUE>>=
+library(ts)
+par(mfrow = c(2, 1))
+acf(alligator.mcx$chain[,1])
+acf(alligator.mcx$chain[,2])
+@ 
+\end{center}
+We would also want to look at the chain of P-values. 
+\begin{center}
+<<fig = TRUE>>=
+dev.p <- cumsum(alligator.mcx$chain[,1] >= alligator.mcx$dobs[1]) / (1 : alligator.mcx$nosim)
+pearson.p <- cumsum(alligator.mcx$chain[,1] >= alligator.mcx$dobs[1]) / (1 : alligator.mcx$nosim)
+par(mfrow = c(2, 1))
+plot(dev.p, type = "l", ylab = "P-value", xlab = "iteration")
+title("Deviance P-value by iteration")
+plot(pearson.p, type = "l", ylab = "P-value", xlab = "iteration")
+title("Pearson P-value by iteration")
+@ 
+\end{center}
+
+Though the P-values have apparently stabilized and are clearly larger
+than most normal type I error rates, there is an extremely slow decay
+in the autocorrelations of the chain of goodness of fit
+statistics. Therefore, we should execute a longer run using large
+batch sizes. While on the subject of batch sizes, note that \mcexact
+does not require the total number of simulations to be a multiple of
+the batch size. If the algorithm terminates in the middle of
+completing a batch, it is not used in the P-value
+calculations. However, the simulations are not wasted if the algorithm
+is resumed with \texttt{update}.  
+
+One large final run of this data could be performed using
+\texttt{update} again. The option, \texttt{flush = TRUE}, tells
+\texttt{update} to throw out all of the data used in the initial
+tinkering, except that it starts the new chain from the final table
+from the initial runs. This is a harmless way to burn the chain in
+while you are tinkering with it.  Of course, the chain can be
+restarted at the default starting value, the observed data, by simply
+rerunning \mcexact.
+
+\bibliographystyle{plain} \bibliography{database.mcexact}
+\begin{appendix}
+
+\section{Tables}
+\begin{table}
+\begin{center}
+\begin{tabular}{lllll} \hline
+Residence & \multicolumn{4}{c}{Residence in 1985} \\ \cline{2-5}
+in 1980 & Northeast & Midwest & South & West \\ \hline
+Northeast & 11,607  & 100     & 366    & 124    \\
+Midwest   & 87      & 13,677  & 515    & 302    \\
+South     & 172     & 225     & 17,819 & 270    \\
+West      & 63      & 176     & 286    & 10,192 \\ \hline
+\end{tabular}
+\end{center}
+\caption{Residency Data}
+\label{tab:res}
+Source \cite{agre:1990}
+\end{table}
+
+\begin{table}
+\begin{center}
+\begin{tabular}{clllll}  \hline
+& \multicolumn{5}{c}{Pathologist B}  \\ \cline{2-6}
+Pathologist A & 1 & 2 & 3 & 4 & 5 \\ \hline
+1 & 22 & 2 & 2 & 0 & 0 \\
+2 & 5  & 7 & 14 & 0 & 0 \\
+3 & 0 & 2 & 36 & 0 & 0 \\
+4 & 0 & 1 & 14 & 7 & 0 \\
+5 & 0 & 0 & 3 & 0 & 3 \\ \hline
+\end{tabular} 
+\end{center}
+\caption{Pathologist Agreement Data}
+\label{tab:path}
+Source \cite{agre:1990}
+\end{table}
+
+
+\begin{table}
+\begin{center}
+\begin{tabular}{lllccccc} \hline
+& & & \multicolumn{5}{c}{Primary Food Choice} \\ \cline{4-8}
+Lake & Gender & Size & Fish & Invert & Reptile & Bird & Other \\ \hline
+1 & Male   & Small & 7  & 1  & 0 & 0 & 5 \\
+  & Male   & Large & 4  & 0  & 0 & 1 & 2 \\
+  & Female & Small & 16 & 3  & 2 & 2 & 3 \\
+  & Female & Large & 3  & 0  & 1 & 2 & 3 \\
+2 & Male   & Small & 2  & 2  & 0 & 0 & 1 \\
+  & Male   & Large & 13 & 7  & 6 & 0 & 0 \\
+  & Female & Small & 3  & 9  & 1 & 0 & 2 \\
+  & Female & Large & 0  & 1  & 0 & 1 & 0 \\
+3 & Male   & Small & 3  & 7  & 1 & 0 & 1 \\
+  & Male   & Large & 8  & 6  & 6 & 3 & 5 \\
+  & Female & Small & 2  & 4  & 1 & 1 & 4 \\
+  & Female & Large & 0  & 1  & 0 & 0 & 0 \\
+4 & Male   & Small & 13 & 10 & 0 & 2 & 2 \\
+  & Male   & Large & 9  &  0 & 0 & 1 & 2 \\
+  & Female & Small & 3  &  9 & 1 & 0 & 1 \\
+  & Female & Large & 8  &  1 & 0 & 0 & 1 \\ \hline      
+\end{tabular}
+\end{center}
+\caption{Alligator Data}
+\label{tab:alli}
+Source \cite{agre:1990} \\
+Model (FG, FL, FS, LGS) where F=food choice, L=lake, S=size, G=gender.
+\end{table}
+\end{appendix}
+
+\end{document}
