@@ -23,6 +23,7 @@ SEXP multinormfull(SEXP rx, SEXP rs, SEXP rdf){
  
   PROTECT(ry = allocVector(REALSXP, n));
   y = REAL(ry);
+  GetRNGstate();
   for(k = 0; k < n; k++){
     if (k > 0)
       for(i = 0; i <= k - 1; i++){
@@ -38,10 +39,9 @@ SEXP multinormfull(SEXP rx, SEXP rs, SEXP rdf){
     }
     mu = x[k];
     sig = sqrt(s[k + n * k]); 
-    GetRNGstate();
     y[k] = fround(mu + sig * rt(REAL(rdf)[0]), 0);
-    PutRNGstate(); 
   }
+  PutRNGstate(); 
  
   UNPROTECT(1);
   return ry;

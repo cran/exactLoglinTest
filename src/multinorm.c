@@ -30,6 +30,8 @@ SEXP multinorm(SEXP rx, SEXP rs, SEXP ry_fix, SEXP ry_old, SEXP rdf, SEXP rk){
 
   for (i = 0; i < n; i++)
     xtwo[i] = x[i];
+
+  GetRNGstate();
   for(k = 0; k < n; k++){
     if (k > 0)
       for(i = 0; i <= k - 1; i++){
@@ -50,11 +52,11 @@ SEXP multinorm(SEXP rx, SEXP rs, SEXP ry_fix, SEXP ry_old, SEXP rdf, SEXP rk){
       y[k] = y_fix[k];
     }
     else {
-      GetRNGstate();
       y[k] = fround(mu + sig * rt(REAL(rdf)[0]), 0);
-      PutRNGstate();
     }
   }
+  PutRNGstate();
+
   SET_VECTOR_ELT(rval, 0, ry);
   SET_VECTOR_ELT(rval, 1, rxtwo);
   UNPROTECT(3);

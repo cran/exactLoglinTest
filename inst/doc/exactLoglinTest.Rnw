@@ -1,6 +1,8 @@
 \documentclass[a4paper]{article}
-\usepackage{natbib,amsmath,geometry}
+\usepackage{natbib,amsmath,geometry,float}
 \geometry{margin=1in}
+
+%\VignetteIndexEntry{exactLoglinTest detailed manual}
 
 \title{\texttt{exactLoglinTest}: A Program for Monte Carlo Conditional
 Analysis of Log-linear Models} 
@@ -8,6 +10,8 @@ Analysis of Log-linear Models}
 
 %\newcommand{\eqref}[1]{(\ref{#1})}
 \newcommand{\mcexact}{\texttt{mcexact} }
+\restylefloat{table}
+
 
 \begin{document} 
 \maketitle 
@@ -279,7 +283,7 @@ We would want to look at the autocorrelation function of the goodness
 of fit statistics.
 \begin{center}
 <<fig = TRUE>>=
-library(ts)
+if(! "package:stats" %in% search()) library(ts)
 par(mfrow = c(2, 1))
 acf(alligator.mcx$chain[,1])
 acf(alligator.mcx$chain[,2])
@@ -468,7 +472,7 @@ coding).
 \begin{appendix}
 
 \section{Tables}
-\begin{table}
+\begin{table}[H]
 \begin{center}
 \begin{tabular}{lllll} \hline
 Residence & \multicolumn{4}{c}{Residence in 1985} \\ \cline{2-5}
@@ -484,7 +488,7 @@ West      & 63      & 176     & 286    & 10,192 \\ \hline
 Source \cite{agre:1990}
 \end{table}
 
-\begin{table}
+\begin{table}[H]
 \begin{center}
 \begin{tabular}{clllll}  \hline
 & \multicolumn{5}{c}{Pathologist B}  \\ \cline{2-6}
@@ -502,7 +506,7 @@ Source \cite{agre:1990}
 \end{table}
 
 
-\begin{table}
+\begin{table}[H]
 \begin{center}
 \begin{tabular}{lllccccc} \hline
 & & & \multicolumn{5}{c}{Primary Food Choice} \\ \cline{4-8}
@@ -531,7 +535,7 @@ Source \cite{agre:1990} \\
 Model (FG, FL, FS, LGS) where F=food choice, L=lake, S=size, G=gender.
 \end{table}
 
-\begin{table}[htbp]
+\begin{table}[H]
   \centering
   \begin{tabular}{cccc|ccccc} \hline
     &       &       &     &B &  \multicolumn{2}{c}{no} & \multicolumn{2}{c}{yes} \\
@@ -558,7 +562,7 @@ pos & small & small & no  &  &   5 &   7 &  21 &   9 \\
   \label{tab:czech}
 \end{table}
 
-\begin{table}[htbp]
+\begin{table}[H]
   \centering
   \begin{tabular}{ccc|cccc} \hline
      &     &       & \multicolumn{4}{c}{Class} \\
