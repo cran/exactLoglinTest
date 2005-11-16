@@ -1,7 +1,7 @@
-                                        #this is the workhorse program for the
-                                        #booth and butler method
-                                        #it requires the input to be of the form
-                                        #constructed by mcexact
+##this is the workhorse program for the
+##booth and butler method
+##it requires the input to be of the form
+##constructed by mcexact
 update.bab <- function(object, ...){
   bab(object, ...)
 }

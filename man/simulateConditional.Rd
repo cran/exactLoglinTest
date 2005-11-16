@@ -1,5 +1,5 @@
-\name{simulate.conditional}
-\alias{simulate.conditional}
+\name{simulateConditional}
+\alias{simulateConditional}
 \alias{simtable.bab}
 \alias{simtable.cab}
 
@@ -9,7 +9,7 @@
   the sufficient statistics. 
 }
 \usage{
-simulate.conditional(formula,
+simulateConditional(formula,
                      data,
                      dens = hyper,
                      nosim = 10^3,
@@ -47,7 +47,7 @@ simtable.cab(args, nosim = NULL, p = NULL, y.start = NULL)
 \seealso{\code{\link{fisher.test}}}
 \examples{
 data(czech.dat)
-chain2 <- simulate.conditional(y ~ (A + B + C + D + E + F) ^ 2,
+chain2 <- simulateConditional(y ~ (A + B + C + D + E + F) ^ 2,
                                data = czech.dat,
                                method = "cab",
                                nosim = 10 ^ 3,

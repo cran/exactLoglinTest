@@ -340,14 +340,14 @@ margins. However, we would like to save all of the simulated table
 entries, not just the deviance and Pearson statistics. This could be
 accomplished by changing the argument \texttt{stat} of \mcexact to an
 appropriate statistic. However, the function
-\texttt{simulate.conditional} performs this simulation for us. It
+\texttt{simulateConditional} performs this simulation for us. It
 returns the simulated tables in a matrix with each row being a
 complete simulated table.
 
 Now we run the chain. Notice the \texttt{stat = cell.stat} option to
 load the newly defined statistic.
 <<>>= 
-chain <- simulate.conditional(y ~ (A + B + C + D + E + F) ^ 2,
+chain <- simulateConditional(y ~ (A + B + C + D + E + F) ^ 2,
                               data = czech.dat,
                               method = "cab",
                               nosim = 10 ^ 3,
@@ -376,7 +376,7 @@ distributions. Here the density must be specified on the log scale up
 to a constant. Since a uniform density is simply a constant we use a
 density that always returns 0.
 <<>>= 
-chain2 <- simulate.conditional(y ~ (A + B + C + D + E + F) ^ 2,
+chain2 <- simulateConditional(y ~ (A + B + C + D + E + F) ^ 2,
                                data = czech.dat,
                                method = "cab",
                                nosim = 10 ^ 3,
@@ -424,11 +424,11 @@ terms from \eqref{eq:poisson}. Consider the gender effect in
 specific. Here, 2.42 suggests the odds of surviving for a male were
 roughly 9\% that of a female.  Furthermore, the estimate is highly
 significant. To calculate an exact P-value for this problem we use
-\texttt{simulate.conditional} to simulate tables conditioning on all
+\texttt{simulateConditional} to simulate tables conditioning on all
 of the parameters except the one corresponding to the
 \text{factor(surv) : factor(sex)} interaction.
 <<>>=
-chain <- simulate.conditional(y ~  factor(surv) +
+chain <- simulateConditional(y ~  factor(surv) +
                               (factor(class) + factor(age)) : factor(surv) +
                               factor(alpha),
                               dat = titanic.dat,

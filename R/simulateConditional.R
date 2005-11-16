@@ -1,4 +1,4 @@
-simulate.conditional <- function(formula,
+simulateConditional <- function(formula,
                                  data,
                                  dens = hyper,
                                  nosim = 10 ^ 3,
