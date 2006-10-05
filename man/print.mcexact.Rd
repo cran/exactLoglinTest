@@ -3,6 +3,8 @@
 \alias{print.cab}
 \alias{summary.bab}
 \alias{summary.cab}
+\alias{print.babSummary}
+\alias{print.cabSummary}
 \title{Print utilities for mcexact}
 \description{
   Generic print methods for objects of class \code{cab} and \code{bab}

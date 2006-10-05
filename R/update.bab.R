@@ -82,7 +82,7 @@ bab <-  function(args, nosim = NULL, maxiter = NULL, savechain = FALSE){
   setheta <- sqrt((1 - 2 * theta) * args$sumdwsq + (theta ^ 2) * args$sumwsq) / (i - 1);
   args$phat <- theta
   args$mcse <- setheta
-  args$perpos <- perpos / args$nosim
+  args$perpos <- perpos / min(args$nosim, args$maxiter)
   return(args)
 }
 

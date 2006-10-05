@@ -1,4 +1,3 @@
-#y is a starting value
 #x is the design matrix
 errorcheck <- function(y, x, stat, dens, nosim, method, savechain, tdf, maxiter, p, batchsize){
   if ((!is.real(y)) & (!is.integer(y)))

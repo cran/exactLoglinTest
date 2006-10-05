@@ -47,7 +47,9 @@ simtable.bab <-  function(args, nosim = NULL, maxiter = NULL){
   if (i == 1)
     warning("No valid tables found")
   else {
-    return(chain[1 : (i - 1),order(args$ord)])
+    rval <- cbind(chain[1 : (i - 1), order(args$ord)], chain[1 : (i-1), nocol +1])
+    #return(chain[1 : (i - 1),order(args$ord)])
+    return(rval)
   }
 }
 

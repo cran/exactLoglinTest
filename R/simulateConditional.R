@@ -24,6 +24,6 @@ simulateConditional <- function(formula,
     if (is.null(y.start))
       return(simtable.cab(args))
     else
-      return(simulate.cab(args, y.start = y.start))
+      return(simtable.cab(args, y.start = y.start))
   }
 }
