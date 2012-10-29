@@ -1,4 +1,4 @@
-gof <- function(y = NULL, mu = NULL, rowlabels = F){
+gof <- function(y = NULL, mu = NULL, rowlabels = FALSE){  # HJ -- was F
   if (rowlabels) c("deviance", "Pearson")
   else {
     temp <- y != 0

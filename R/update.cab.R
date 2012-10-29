@@ -61,8 +61,15 @@ cab <- function(args, nosim = NULL, batchsize = NULL, savechain = FALSE, p = NUL
     y1.new.permute <- temp[[1]]
     conde1.old.permute <- temp[[2]]
     changed <- y1.new.permute[(k + 1) : args$n1]
+
     tf2 <- tf3 <- FALSE
-    tf1 <- all(changed >= 0)
+
+    # HJ
+    N.na <- sum(is.na(changed)) 
+    if (i==1 & N.na > 0)
+	warning("i = ", i, ": 'changed' has ", N.na, " NAs")
+    tf1 <- N.na==0 & all(changed >= 0)
+
     if (tf1){
       y1.new <- y1.new.permute[order(shuffle)]
       y2.new <- round(args$x2invt %*% (args$s - t(args$x1) %*% y1.new))
@@ -116,4 +123,3 @@ cab <- function(args, nosim = NULL, batchsize = NULL, savechain = FALSE, p = NUL
   args$perpos <- perpos / args$nosim
   return(args)
 }
-

@@ -6,7 +6,7 @@
   by \code{mcexact}.
 }
 \usage{
-gof(y = NULL, mu = NULL, rowlabels = F)
+gof(y = NULL, mu = NULL, rowlabels = FALSE)
 }
 \arguments{
   \item{y}{counts}

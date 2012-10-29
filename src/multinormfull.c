@@ -26,13 +26,16 @@ SEXP multinormfull(SEXP rx, SEXP rs, SEXP rdf){
   GetRNGstate();
   for(k = 0; k < n; k++){
     if (k > 0)
-      for(i = 0; i <= k - 1; i++){
+      //for(i = 0; i <= k - 1; i++){
+      for(i = 0; i < k - 1; i++){
 	x[k]  =  x[k] + (y[i] -  x[i]) * s[i + n * k] / s[i + n * i];
 	s[k + n * k] = s[k + n * k] - pow(s[i + n * k], 2) / s[i + n * i];
       }
     if (k < n - 1){
-      for(i = 1; i <= k; i++){
-	for(j = 0; j <= i - 1; j++){
+      //for(i = 1; i <= k; i++){
+      for(i = 1; i < k; i++){
+	//for(j = 0; j <= i - 1; j++){
+	for(j = 0; j < i - 1; j++){
 	  s[i + n * (k + 1)] = s[i + n * (k + 1)] - s[j + n * i] * s[j + n * (k + 1)] / s[j + n * j];
 	}
       }

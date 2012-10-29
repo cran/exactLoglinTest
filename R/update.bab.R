@@ -48,7 +48,13 @@ bab <-  function(args, nosim = NULL, maxiter = NULL, savechain = FALSE){
      ##coerce here since the calculation
      ##of y.new is done as double
      y.new <- round(c(y1.new, y2.new))
-     if (all(y.new >= 0)){
+
+     # HJ
+     N.na <- sum(is.na(y.new)) 
+     if (i==1 & N.na > 0)
+	warning("i = ", i, ": 'y.new' has ", N.na, " NAs")
+
+     if (N.na==0 & all(y.new >= 0)){
        perpos <- perpos + 1
        d <- args$stat(y = y.new, mu = args$mu.hat, rowlabels = FALSE)
        ##importance weights on the log scale
@@ -85,4 +91,3 @@ bab <-  function(args, nosim = NULL, maxiter = NULL, savechain = FALSE){
   args$perpos <- perpos / min(args$nosim, args$maxiter)
   return(args)
 }
-

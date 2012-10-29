@@ -29,7 +29,13 @@ simtable.bab <-  function(args, nosim = NULL, maxiter = NULL){
      ##coerce here since the calculation
      ##of y.new is done as double
      y.new <- round(c(y1.new, y2.new))
-     if (all(y.new >= 0)){
+
+     # HJ
+     N.na <- sum(is.na(y.new))
+     if (i==1 & N.na > 0)
+	warning("i = ", i, ": 'y.new' has ", N.na, " NAs")
+
+     if (N.na==0 & all(y.new >= 0)){
        d <- y.new
        ##importance weights on the log scale
        w <- args$dens(y.new) - rounded.tprob(y1.new.permute,

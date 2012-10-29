@@ -15,7 +15,22 @@ Analysis of Log-linear Models}
 
 \begin{document} 
 \maketitle 
+Note, a more detailed, though static, description of the software is
+available in \cite{caffo2006exact}. To reference \texttt{exactLoglinTest},
+please use:
+\noindent
+\begin{verbatim}
+@article{caffo2006exact,
+title={Exact Hypothesis Tests for Log-linear Models with {exactLoglinTest}},
+author={Caffo, B},
+journal={Journal of Statistical Software},
+volume={17},
+number={7},
+pages={1--17},
+year={2006}}
+\end{verbatim}
 
+\section{Introduction}
 Nuisance parameters are parameters that are not of direct interest to
 the inferential question in hand. In a frequentist or likelihood
 paradigm, a common tool for eliminating nuisance parameters is to
@@ -65,61 +80,61 @@ conservative conditional tests can produce P-values that are smaller
 than those calculated via Chi-squared approximations (see Subsection
 \ref{path} for an example).
 
-\subsection{Binomial Calculations}
-\label{sec:binom}
-Conditional inference for Poisson log-linear models contains
-conditional inference for binomial-logit models as a special
-case. Consider a binomial logit models of the form, $b_i \sim
-\mbox{Bin}(n_i,p_i)$ for $i=1,\ldots,k$ and
-\begin{equation}
-\label{logitmodel}
- \mbox{logit}(p_{i}) = z_i \gamma + x_i' \beta,
-\end{equation}
-where $\gamma$ is a scalar and $\beta$ is a $p$ dimensional vector.
-Frequently, $x_i'$ contains only a strata indicator and an intercept
-term. In this case conditioning on the sufficient statistic for
-$\beta$ results in standard conditional logistic regression. For this
-purpose, we suggest the \texttt{coxph} function as described in
-\cite{vr:2002}. Instead we consider the more general case where
-$\beta$ is arbitrary vector of nuisance parameters.  However, the
-reader should again be warned that the loss of information from
-conditioning can sometimes be quite severe in these problems and hence
-produce useless results.
+% \subsection{Binomial Calculations}
+% \label{sec:binom}
+% Conditional inference for Poisson log-linear models contains
+% conditional inference for binomial-logit models as a special
+% case. Consider a binomial logit models of the form, $b_i \sim
+% \mbox{Bin}(n_i,p_i)$ for $i=1,\ldots,k$ and
+% \begin{equation}
+% \label{logitmodel}
+%  \mbox{logit}(p_{i}) = z_i \gamma + x_i' \beta,
+% \end{equation}
+% where $\gamma$ is a scalar and $\beta$ is a $p$ dimensional vector.
+% Frequently, $x_i'$ contains only a strata indicator and an intercept
+% term. In this case conditioning on the sufficient statistic for
+% $\beta$ results in standard conditional logistic regression. For this
+% purpose, we suggest the \texttt{coxph} function as described in
+% \cite{vr:2002}. Instead we consider the more general case where
+% $\beta$ is arbitrary vector of nuisance parameters.  However, the
+% reader should again be warned that the loss of information from
+% conditioning can sometimes be quite severe in these problems and hence
+% produce useless results.
 
 
-Consider testing $H_0 \gamma = 0$ versus some alternative.
-The following model model is equivalent to the null modell for
-\eqref{logitmodel}:
-\begin{equation}
-\label{eq:poisson}
-y_{ij} \sim \mbox{Poisson}(\mu_{ij}) 
-\hspace{.3in} 
-\mbox{log}(\mu_{i1}) = \alpha_i + x_i' \beta
-\hspace{.3in} 
-\mbox{log}(\mu_{i2}) = \alpha_i,
-\end{equation}
-for $j=1,2$ and $i=1,\ldots,k$.  The sufficient statistics for the
-$\alpha_i$ are $y_{i1} + y_{i2} = y_{i+}$. Then it is easy to show
-that the conditional distribution of $y_{i1} | y_{i+}$ is precisely
-the model given by \eqref{logitmodel} where
-\begin{eqnarray*}
-  p_i & = &\mu_{i1} / \mu_{i+} \\
-  b_i & = & y_{i1} \\
-  n_i & = & y_{i+}.
-\end{eqnarray*}
-Therefore, conditioning out the nuisance parameters $\{\alpha_i\}$ and
-$\beta$ for the Poisson log-linear model yields exactly the same
-(null) conditional distribution as conditioning out $\beta$ in model
-\eqref{logitmodel}.  Furthermore, this exercise indicates exactly how
-to perform the calculations, which is useful since \texttt{exactLoglinTest} only
-accepts models in the form of Poisson log-linear models.
+% Consider testing $H_0 \gamma = 0$ versus some alternative.
+% The following model model is equivalent to the null modell for
+% \eqref{logitmodel}:
+% \begin{equation}
+% \label{eq:poisson}
+% y_{ij} \sim \mbox{Poisson}(\mu_{ij}) 
+% \hspace{.3in} 
+% \mbox{log}(\mu_{i1}) = \alpha_i + x_i' \beta
+% \hspace{.3in} 
+% \mbox{log}(\mu_{i2}) = \alpha_i,
+% \end{equation}
+% for $j=1,2$ and $i=1,\ldots,k$.  The sufficient statistics for the
+% $\alpha_i$ are $y_{i1} + y_{i2} = y_{i+}$. Then it is easy to show
+% that the conditional distribution of $y_{i1} | y_{i+}$ is precisely
+% the model given by \eqref{logitmodel} where
+% \begin{eqnarray*}
+%   p_i & = &\mu_{i1} / \mu_{i+} \\
+%   b_i & = & y_{i1} \\
+%   n_i & = & y_{i+}.
+% \end{eqnarray*}
+% Therefore, conditioning out the nuisance parameters $\{\alpha_i\}$ and
+% $\beta$ for the Poisson log-linear model yields exactly the same
+% (null) conditional distribution as conditioning out $\beta$ in model
+% \eqref{logitmodel}.  Furthermore, this exercise indicates exactly how
+% to perform the calculations, which is useful since \texttt{exactLoglinTest} only
+% accepts models in the form of Poisson log-linear models.
 
-Currently \texttt{exactLoglinTest} is useful for tests of $\gamma = 0$. With
-modifications, the central ideas could be used to calculate a Monte
-Carlo estimate of the conditional likelihood for $\gamma$. (It is
-possible to use \mcexact as is for this purpose. However, we have had
-mixed success in this endeavor and it is best avoided due to numerical
-instability.)
+% Currently \texttt{exactLoglinTest} is useful for tests of $\gamma = 0$. With
+% modifications, the central ideas could be used to calculate a Monte
+% Carlo estimate of the conditional likelihood for $\gamma$. (It is
+% possible to use \mcexact as is for this purpose. However, we have had
+% mixed success in this endeavor and it is best avoided due to numerical
+% instability.)
 
 \section{\texttt{exactLoglinTest}} 
 The software \texttt{exactLoglinTest} is an implementation of the algorithms presented
@@ -283,7 +298,6 @@ We would want to look at the autocorrelation function of the goodness
 of fit statistics.
 \begin{center}
 <<fig = TRUE>>=
-if(! "package:stats" %in% search()) library(ts)
 par(mfrow = c(2, 1))
 acf(alligator.mcx$chain[,1])
 acf(alligator.mcx$chain[,2])
@@ -396,76 +410,82 @@ illustrate how to obtain simulated tables from
 data would be necessary for a thorough analysis of the disclosure
 risk.
 
-\subsection{Exact Score Test for Binomial Counts}
-The data given in \ref{tab:titanic} are obtained from the Cytel web
-site\footnote{http://www.cytel.com/}. The data cross classify the
-survival of the Titanic passengers by class, gender and age. You can
-obtain the data with
-<<>>=
-data(titanic.dat)
-@ 
+% \subsection{Exact Score Test for Binomial Counts}
+% The data given in \ref{tab:titanic} are obtained from the Cytel web
+% site\footnote{http://www.cytel.com/}. The data cross classify the
+% survival of the Titanic passengers by class, gender and age. You can
+% obtain the data with
+% <<>>=
+% data(titanic.dat)
+% @ 
 
-Following the analysis done at the Cytel web site, we view each
-person's survival as a binary outcome. We use a model where a person's
-age, sex and class are additive effects on the logit scale. In the
-light of the discussion from Subsection \ref{sec:binom}, this model is
-equivalent to the following:
-<<>>=
-titanic.dat$alpha <- rep(1 : 16, 2)
-fit <- glm(y ~ (factor(class) + factor(age) + factor(sex)) : factor(surv) +
-           factor(surv) + factor(alpha),
-           family = poisson,
-           data = titanic.dat)
-summary(fit)
-@ 
+% Following the analysis done at the Cytel web site, we view each
+% person's survival as a binary outcome. We use a model where a person's
+% age, sex and class are additive effects on the logit scale. In the
+% light of the discussion from Subsection \ref{sec:binom}, this model is
+% equivalent to the following:
+% <<>>=
+% titanic.dat$alpha <- rep(1 : 16, 2)
+% fit <- glm(y ~ (factor(class) + factor(age) + factor(sex)) : factor(surv) +
+%            factor(surv) + factor(alpha),
+%            family = poisson,
+%            data = titanic.dat)
+% summary(fit)
+% @ 
 
-The varianble \texttt{alpha} is added to correspond to the $\alpha_i$
-terms from \eqref{eq:poisson}. Consider the gender effect in
-specific. Here, 2.42 suggests the odds of surviving for a male were
-roughly 9\% that of a female.  Furthermore, the estimate is highly
-significant. To calculate an exact P-value for this problem we use
-\texttt{simulateConditional} to simulate tables conditioning on all
-of the parameters except the one corresponding to the
-\text{factor(surv) : factor(sex)} interaction.
-<<>>=
-chain <- simulateConditional(y ~  factor(surv) +
-                              (factor(class) + factor(age)) : factor(surv) +
-                              factor(alpha),
-                              dat = titanic.dat,
-                              nosim = 10 ^ 3,
-                              method = "cab",
-                              p = .1)
-@ 
+% The varianble \texttt{alpha} is added to correspond to the $\alpha_i$
+% terms from \eqref{eq:poisson}. Consider the gender effect in
+% specific. Here, 2.42 suggests the odds of surviving for a male were
+% roughly 9\% that of a female.  Furthermore, the estimate is highly
+% significant. To calculate an exact P-value for this problem we use
+% \texttt{simulateConditional} to simulate tables conditioning on all
+% of the parameters except the one corresponding to the
+% \text{factor(surv) : factor(sex)} interaction.
+% <<>>=
+% chain <- simulateConditional(y ~  factor(surv) +
+%                               (factor(class) + factor(age)) : factor(surv) +
+%                               factor(alpha),
+%                               dat = titanic.dat,
+%                               nosim = 10 ^ 3,
+%                               method = "cab",
+%                               p = .1)
+% @ 
 
 
-A P-value for a score test of $H_0 : \gamma = 0$ versus $H_a : \gamma
-< 0$ simply counts the proportion of tables with sufficient statistic
-for $\gamma$ is smaller than the observed value. Using the notation
-from \eqref{eq:poisson} the sufficient statistic for $\gamma$ is
-$s_\gamma = \sum_i z_i y_i \equiv z' y$. We calculate the chain of
-sufficient statistics and the observed sufficient statistic below.
-<<>>=
-z <- titanic.dat$sex * titanic.dat$surv
-sgamma <- chain %*% z
-sgamma.obs <- titanic.dat$y %*% z
-mean(sgamma <= sgamma.obs[1])
-@ 
-Apparently, none of the simulated tables have sufficient statistics
-for $\gamma$ below that of the observed, which agrees closely with
-large sample results above.
+% A P-value for a score test of $H_0 : \gamma = 0$ versus $H_a : \gamma
+% < 0$ simply counts the proportion of tables with sufficient statistic
+% for $\gamma$ is smaller than the observed value. Using the notation
+% from \eqref{eq:poisson} the sufficient statistic for $\gamma$ is
+% $s_\gamma = \sum_i z_i y_i \equiv z' y$. We calculate the chain of
+% sufficient statistics and the observed sufficient statistic below.
+% <<>>=
+% z <- titanic.dat$sex * titanic.dat$surv
+% sgamma <- chain %*% z
+% sgamma.obs <- titanic.dat$y %*% z
+% mean(sgamma <= sgamma.obs[1])
+% @ 
+% Apparently, none of the simulated tables have sufficient statistics
+% for $\gamma$ below that of the observed, which agrees closely with
+% large sample results above.
 
-\section{Discussion and To Do}
+\section{Discussion}
 In this manual we investigated three straightforward examples of
-\texttt{exactLoglinTest} and considered two useful extensions of the
-program. The program was initially constructed calculate P-values for
-goodness of fit tests for contingency tables. However, the latter
-examples suggest a more user friendly interface for those problems
-would be useful.
+\texttt{exactLoglinTest} and considered a useful extension of the
+program to disclorsure limitation.  The program was initially
+constructed calculate P-values for goodness of fit tests for
+contingency tables.
 
-Finally, it should be noted that only the inner-most calculations have
-been migrated to C. Possibly great gains in the speed of the algorithm
-could be attained by migrating more of the code (or more efficient R
-coding).
+In previous versions of this vignette, we discussed using
+\texttt{exactLoglinTest} for performing tests in exact binomial
+logistic regression.  It is true that conditional Poisson loglinear
+models contain conditional logistic regression models as special
+cases.  However, we have found that in some cases, the matrices used
+by \texttt{exactLoglinTest} for this purpose are ill conditioned. Thus
+we no longer recommend \texttt{exactLoglinTest} for pursuing
+conditional logistic regression models, unless the user is particularly
+familiar with the area. The paper \cite{caffo2006exact} gives more
+details on exact binomial testing.
+
 
 \bibliographystyle{plain} \bibliography{database.mcexact}
 \begin{appendix}
