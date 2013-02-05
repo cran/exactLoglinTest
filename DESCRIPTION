@@ -1,5 +1,5 @@
 Package: exactLoglinTest
-Version: 1.4.1
+Version: 1.4.2
 Title: Monte Carlo Exact Tests for Log-linear models
 Author: Brian Caffo <bcaffo@gmail.com>
 Maintainer: Brian Caffo <bcaffo@gmail.com>
@@ -9,6 +9,6 @@ Description: Monte Carlo and MCMC goodness of fit tests for log-linear
         models
 License: GPL
 URL: http://www.bcaffo.com
-Packaged: 2012-12-03 19:51:20 UTC; bcaffo
+Packaged: 2013-02-05 11:58:52 UTC; bcaffo
 Repository: CRAN
-Date/Publication: 2012-12-04 07:07:21
+Date/Publication: 2013-02-05 13:40:27
